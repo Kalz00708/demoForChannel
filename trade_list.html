@@ -1,0 +1,173 @@
+{% load static %} <!-- required for django to load the static/ folder as the root for static files listed below -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Pending Trades</title>
+
+<!-- ******* REFERENCED FILES - {% static ... %} links to djangos static files which are stored in MOD-TR-PTA static ******* -->
+    <link href="{% static 'PTA/css/bootstrap.min.css' %}" rel="stylesheet"> <!-- bootstrap css theme -->
+    <link href="{% static 'PTA/css/style.css' %}" rel="stylesheet" type="text/css"> <!-- overriding custom style sheet -->
+    <script src="{% static 'PTA/js/jquery.min.js' %}"></script> <!-- jquery plugin file -->
+    <script src="{% static 'PTA/scripts/time.js' %}"></script> <!-- time script for footer of page -->
+    <script src="{% static 'PTA/js/expand.js' %}"></script> <!-- expand script for the expanding table rows -->
+    <script src="{% static 'PTA/js/popup.js' %}"></script> <!-- script for popups when actioning trades -->
+    <script src="{% static 'PTA/js/jquery.min.js' %}"></script> <!-- jquery plugin file -->
+    <script src="{% static 'PTA/js/bootstrap.min.js' %}"></script> <!-- bootstrap javascript file -->
+    <script src="{% static 'PTA/js/scripts.js' %}"></script> <!-- not needed must be deleted -->
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script> <!-- jquery javascript file referenced online -->
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script> <!-- datatables javascript file referenced online -->
+    <link href="{% static 'PTA/css/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css"> <!-- datatables css file referenced locally in static css folder -->
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-1.12.4.js"></script> <!-- jquery javascript file referenced online -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script> <!-- datatables javascript file referenced online -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script> <!-- datatables javasccript file referenced online -->
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-1" id = "logo">
+
+            <img alt="Logo" src="{% static 'PTA/images/Untitled.png' %}" height="55" width="60" align="right" >
+
+        </div>
+        <!--************* NAV TABS ******************-->
+        <div class="col-md-11" id="nav_tabs">
+            <p> </p>
+            <ul class="nav nav-tabs">
+                <li {% if part == '1' %}class="active"{% endif %}  id="trades">
+                    <a>Trades</a>
+                </li>
+                <li {% if part == '2' %}class="active"{% endif %} id="blotter">
+                    <a>Blotter</a>
+                </li>
+                <li class="dropdown pull-right">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">{{ user.first_name }} {{ user.last_name }}<strong class="caret"></strong></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'pta:change_password' %}">Settings</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'pta:logout_view' %}">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+<!--************* NAV TABS END ******************-->
+
+    <div class="row" id="trade-list" {% if part == '2' %}hidden{% endif %}>
+        <div class="col-md-3"> <!-- col-md-3 defines the 3/12 page layout for the left panel overview -->
+
+<!--************BLOTTER OVERVIEW************-->
+
+            <div id = "b_o">
+            <h4 class="text-muted text-left">
+                Blotter Overview </h4></div>
+            <div id="gentext">
+                <table style="width:100%">
+                    <tr>
+                        <td><b>ID</b></td>
+                        <td><b>Actioned</b></td>
+                        <td><b>Status</b></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="col-md-9" id="standard"> <!-- col-md-9 defines the 9/12 page layout for the pending trades overview -->
+
+<!--
+*************PENDING TRADES**************
+Table is generated from the django database. The table is created and
+the trades are pushed to the table from the script in the
+static/js/channel.js file. Body tags for the table are intentionally
+left blank as the script populates the body of the table.
+-->
+
+            <div id = "p_t">
+            <h4 class="text-muted">
+                Pending Trades </h4></div>
+
+
+
+            <table id="example" cellspacing="0" width="100%" class="table table-condensed" style="border-collapse:collapse;">
+                <thead>
+                <tr style="color:white">
+                    <td width="4%"><b>ID</b></td>
+                    <td width="16%"><b>Trade Date</b></td>
+                    <td width="10%"><b>Buyer Name</b></td>
+                    <td width="10%"><b>Amount</b></td>
+                    <td width="10%"><b>Currency Pair</b></td>
+                    <td width="10%"><b>Rate</b></td>
+                    <td width="10%"><b>Seller Name</b></td>
+                    <td width="10%"><b>Type</b></td>
+                </tr>
+                </thead>
+
+                <tbody style="color:white">
+                </tbody>
+            </table>
+
+            <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+            <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+            <script type=text/javascript" charset=utf8" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+        </div>
+    </div>
+
+<!--****************** BLOTTER PAGE - HIDDEN BY DEFAULT *****************-->
+
+    <div class="row" id="blotter-list" {% if part == '1' %}hidden{% endif %}>
+
+        <div class="col-md-12" id="standard"> <!-- col-md-12 defines the whole width layout for blotter -->
+
+            <div id = "p_t">
+                <h4 class="text-muted">
+                    Trade History</h4></div>
+
+            <div id="blotter">
+
+
+                <table id="example2" cellspacing="0" width="100%" class="table table-condensed" style="border-collapse:collapse; ">
+                    <thead style="color:white">
+                    <tr style="color:white">
+                        <td width="6%"><b>Trade ID</b></td>
+                        <td width="16%"><b>Trade Date</b></td>
+                        <td width="10%"><b>Buyer Name</b></td>
+                        <td width="10%"><b>Amount</b></td>
+                        <td width="10%"><b>Currency Pair</b></td>
+                        <td width="10%"><b>Rate</b></td>
+                        <td width="10%"><b>Seller Name</b></td>
+                        <td width="10%"><b>Type</b></td>
+                        <td width="6%"><b>Status</b></td>
+                        <td width="16%"><b>Time Actioned</b></td>
+                    </tr>
+                    </thead>
+
+                    <tbody style="color:white">
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'PTA/js/dataTable.js' %}"></script>
+<script src="{% static 'PTA/js/channel.js' %}"></script>
+<script src="{% static 'PTA/js/switchPage.js' %}"></script>
+<script src="{% static 'PTA/js/jquery.min.js' %}"></script>
+<script src="{% static 'PTA/js/scripts.js' %}"></script>
+
+<!--*************FOOTER**************-->
+
+<div id="footer">
+    <p id="footer">Logged in as {{ user.first_name }} {{ user.last_name }}. Institution: {{user.profile.institution}}. <div id="clockbox"></div></p>
+
+</div>
+</body>
+</html>
